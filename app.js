@@ -7,10 +7,11 @@ const input = d3.select('input');
 form.on('submit', function() {
   d3.event.preventDefault();
   let text = input.property('value');
+  const freq = getFrequencies(text);
 
   let letters = d3.select('#letters')
                     .selectAll('.letter')
-                    .data(getFrequencies(text), (d) => d.character);
+                    .data(freq, (d) => d.character);
 
   letters
       .classed('new', false)
@@ -36,6 +37,51 @@ form.on('submit', function() {
     .text(`There are ${letters.enter().nodes().length} new character`);
 
   input.property('value', '');
+
+  // Use svg to do it!
+  const width = 400;
+  const height = 200;
+  const barPadding = 10;
+  const barNum = freq.length
+  const barWidth = width / barNum - barPadding;  
+
+  let svg = d3.select('svg')
+              .attr('width', width)
+              .attr('height', height)
+              .selectAll('g')
+              .data(freq, (d) => d.character)
+
+  svg
+      .classed('new-letter', false)
+    .exit()
+    .remove()
+
+  const svgBar = svg
+                  .enter()
+                    .append('g')
+                      .classed('svg-letter', true)
+                      .classed('new-letter', true)
+  
+  svgBar.append('rect')
+  svgBar.append('text')
+
+  svgBar
+    .merge(svg)
+      .select('rect')
+        .attr('width', barWidth)
+        .attr('height', d => d.count * 50)
+        .attr('x', (d, i) => i * (barWidth + barPadding))
+        .attr('y', d => height - d.count * 50)
+        .text(d => d.character)
+  
+  svgBar
+    .merge(svg)
+      .select('text')
+        .attr('x', (d, i) => (barWidth + barPadding) * i + barWidth / 2)
+        .attr('y', d => height - d.count * 50 - 10)
+        .text(d => d.character)
+
+
 })
 
 reset.on('click', function() {

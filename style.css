@@ -45,3 +45,11 @@ form > button:hover {
   font-size: 1.5em;
   color: #ffffff;
 }
+
+.svg-letter {
+  fill: #ccc;
+}
+
+.new-letter {
+  fill: #78C2C4;
+}
